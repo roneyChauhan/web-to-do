@@ -16,7 +16,7 @@ export const loginUser = async (body: { email: string; password: string }) => {
 		});
 		if (res.ok) {
 			const data = (await res.json()).data;
-			if (data && data.user && data.token) {
+			if (data && data?.user && data?.token) {
 				localStorage.setItem(localKeys.user, JSON.stringify(data.user));
 				localStorage.setItem(localKeys.token, data.token);
 				user.set(data.user);
@@ -30,7 +30,7 @@ export const loginUser = async (body: { email: string; password: string }) => {
 			if (res.status === 401) {
 				ErrorToast.show('check credentials');
 			} else if (res.status === 404) {
-				ErrorToast.show('emailNotFound');
+				ErrorToast.show('email Not Found');
 			} else {
 				ErrorToast.show('something Wrong');
 			}
@@ -53,7 +53,7 @@ export const registerUser = async (body: { name :string; email: string; password
 		});
 		if (res.ok) {
 			const data = (await res.json()).data;
-			if (data && data.user && data.token) {
+			if (data && data?.user && data?.token) {
 				localStorage.setItem(localKeys.user, JSON.stringify(data.user));
 				localStorage.setItem(localKeys.token, data.token);
 				user.set(data.user);
@@ -61,16 +61,10 @@ export const registerUser = async (body: { name :string; email: string; password
 				goto('/');
 				return true;
 			}
-			ErrorToast.show('can not login');
+			ErrorToast.show('can not register');
 			return false;
 		} else {
-			if (res.status === 401) {
-				ErrorToast.show('check credentials');
-			} else if (res.status === 404) {
-				ErrorToast.show('emailNotFound');
-			} else {
-				ErrorToast.show('something Wrong');
-			}
+            ErrorToast.show('something Wrong');
 			return false;
 		}
 	} catch (error) {
