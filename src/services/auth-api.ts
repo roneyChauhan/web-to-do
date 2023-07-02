@@ -27,13 +27,7 @@ export const loginUser = async (body: { email: string; password: string }) => {
 			ErrorToast.show('can not login');
 			return false;
 		} else {
-			if (res.status === 401) {
-				ErrorToast.show('check credentials');
-			} else if (res.status === 404) {
-				ErrorToast.show('email Not Found');
-			} else {
-				ErrorToast.show('something Wrong');
-			}
+            ErrorToast.show('something Wrong');
 			return false;
 		}
 	} catch (error) {

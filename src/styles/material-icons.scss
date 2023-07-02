@@ -1,0 +1,17 @@
+@import 'material-icons/iconfont/round.css';
+@import 'material-icons/iconfont/filled.css';
+@import 'material-icons/iconfont/outlined.css';
+
+.material-icons,
+.material-icons-outlined,
+.material-icons-round,
+.material-icons-two-tone,
+.material-icons-sharp {
+	vertical-align: top;
+	font-size: 1.5rem;
+	line-height: 1;
+
+	&.material-icons-sm {
+		font-size: 1.2rem;
+	}
+}
