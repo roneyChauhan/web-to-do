@@ -39,8 +39,11 @@ export const getData = ({ url, query = {} }: GetInput): Promise<any> => {
 					...(tokenString ? { Authorization: 'Bearer ' + tokenString } : {}),
 				},
 			});
-
-            return res;
+            if (res?.ok) {
+                resolve(await res.json());
+            } else {
+                reject({ status: res.status });
+            }
 		} catch (error) {
 			console.error('API ERROR : ', error);
 			reject(error);
@@ -68,8 +71,6 @@ export const postData = ({ url, body, query = {}, multipart = false }: PostInput
             } else {
                 reject({ status: res.status });
             }
-            console.log(res);
-            resolve(res);
 		} catch (error) {
 			console.error('API ERROR : ', error);
 			reject(error);
@@ -93,7 +94,11 @@ export const putData = ({ url, body, query = {}, multipart = false }: PutInput):
 				},
 				body: multipart ? body : JSON.stringify(body),
 			});
-            return res;
+            if (res?.ok) {
+                resolve(await res.json());
+            } else {
+                reject({ status: res.status });
+            }
 		} catch (error) {
 			console.error('API ERROR : ', error);
 			reject(error);
@@ -115,7 +120,11 @@ export const deleteData = ({ url, query = {} }: DeleteInput): Promise<any> => {
 					...(tokenString ? { Authorization: 'Bearer ' + tokenString } : {})
 				},
 			});
-            return res;
+            if (res?.ok) {
+                resolve(await res.json());
+            } else {
+                reject({ status: res.status });
+            }
 		} catch (error) {
 			console.error('API ERROR : ', error);
 			reject(error);

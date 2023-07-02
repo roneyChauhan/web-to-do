@@ -4,50 +4,70 @@
     import { format } from 'date-fns';
     import { createForm } from 'svelte-form-validation';
     import * as yup from 'yup';
-    import { addTask } from '../../services/task';
-	import { ErrorToast, SuccessToast } from '../../helpers/toasts';
+    import { addTask, getTask, updateTask } from '../services/task';
+	import { ErrorToast, SuccessToast } from '../helpers/toasts';
 
+    export let taskId : string = '';
+    export let onCloseForm: Function;
+    let task : any = {};
+    let mode = taskId ? 'Edit' : 'Add';
     const dateOptions: any = {
-		dateFormat: 'd-m-Y',
+        dateFormat: 'd-m-Y',
 		minDate: format(new Date(), 'dd-MM-yyyy'),
 	};
-
     let isFormSubmit = false;
-
     const { values, highlight, isValid } = createForm({
-		values: {
+        values: {
             title:'',
-			description: '',
-			dueDate: '',
+            description: '',
+            dueDate: '',
             priority:'',
-		},
-		validationSchema: yup.object().shape({
-			title: yup.string().required(),
+        },
+        validationSchema: yup.object().shape({
+            title: yup.string().required(),
             description: yup.string(),
-			dueDate: yup.string(),
+            dueDate: yup.string(),
             priority:yup.string().required(),
-		}),
-		css: {
-			useValid: false,
-		},
-	});
+        }),
+        css: {
+            useValid: false,
+        },
+    });
+    const getTaskList = async () => {
+        try {
+            const res = await getTask(taskId);
+            if (res?.data?.task) {
+                task = res.data.task;
+                $values = {
+                    title : task?.title,
+                    description: task?.description,
+                    dueDate: task?.dueDate ? format(new Date(task.dueDate.toString()), 'dd/MM/yyyy') : '',
+                    priority:task?.priority,
+                };
+            }
+        } catch(error) {
+            ErrorToast.show(`Cannot get tasks. Try again!`);
+        }
+    }
+    $: if (taskId != "") {
+        getTaskList();
+    }
 
 	const handleSubmit = async () => {
         if ($isValid) {
             isFormSubmit = true;
             try {
-                const res = await addTask($values);
-                console.log('res', res);
-                
+                const res = mode === 'Add' ? await addTask($values) : await updateTask(taskId, $values);
                 if (res) {
                     initData();
-                    SuccessToast.show(`Task created successfully`);
+                    onCloseForm(true);
+                    SuccessToast.show(`Task ${mode} successfully`);
                 } else {
-                    ErrorToast.show(`Cannot add task. Try again!`);
+                    ErrorToast.show(`Cannot ${mode} task. Try again!`);
                 }
             } catch(error) {
                 isFormSubmit = false;
-                ErrorToast.show(`Cannot add task. Try again!`);
+                ErrorToast.show(`Cannot ${mode} task. Try again!`);
             }
         }
 	};
@@ -61,7 +81,7 @@
     }
 </script>
 <div class="container mt-5 form">
-    <h5>Create Task</h5>
+    <h5 class='mt-2'>{mode} Task</h5>
     <form class="login-form" on:submit|preventDefault={handleSubmit}>
         <div class="form-group">
             <label for="title">Title:</label>
@@ -89,6 +109,9 @@
         </div>
         <div class="form-group m-3">
             <button type="submit" disabled={isFormSubmit || !$isValid} class="btn btn-primary">Submit</button>
+            <button type="button" on:click={() => {
+                onCloseForm();
+            }} class="btn btn-primary">Cancel</button>
         </div>
     </form>
 </div>
